@@ -17,7 +17,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const response = await axios.get(url);
+    // Definindo o User-Agent como Chrome, por exemplo:
+    const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36';
+    
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': userAgent // Simulando o Chrome
+      }
+    });
+
     const html = response.data;
     const $ = cheerio.load(html);
 
