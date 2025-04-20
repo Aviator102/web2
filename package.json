@@ -1,0 +1,11 @@
+{
+  "name": "proxy-project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
