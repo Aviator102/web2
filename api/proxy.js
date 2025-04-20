@@ -1,22 +1,13 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-
-const rewriteUrl = (url, base) => {
-  try {
-    return new URL(url, base).href;
-  } catch {
-    return url;
-  }
-};
-
 module.exports = async (req, res) => {
   const { url } = req.query;
+
+  // Adicionar log para verificar a URL recebida
+  console.log('URL recebida:', url);
 
   if (!url || !url.startsWith('http')) {
     return res.status(400).send('URL inválida.');
   }
 
-  // Definindo o User-Agent para simular o Chrome
   const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36';
   
   try {
