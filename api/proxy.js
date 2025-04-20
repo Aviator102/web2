@@ -1,26 +1,23 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+const rewriteUrl = (url, base) => {
+  try {
+    return new URL(url, base).href;
+  } catch {
+    return url;
+  }
+};
+
 module.exports = async (req, res) => {
   const { url } = req.query;
-
-  // Adicionar log para verificar a URL recebida
-  console.log('URL recebida:', url);
 
   if (!url || !url.startsWith('http')) {
     return res.status(400).send('URL inválida.');
   }
 
-  const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36';
-  
   try {
-    console.log(`Tentando acessar a URL: ${url}`);
-
-    const response = await axios.get(url, {
-      headers: {
-        'User-Agent': userAgent, // Simulando o Chrome
-      }
-    });
-
-    console.log(`Resposta recebida com status: ${response.status}`);
-
+    const response = await axios.get(url);
     const html = response.data;
     const $ = cheerio.load(html);
 
@@ -52,16 +49,6 @@ module.exports = async (req, res) => {
 
     res.send($.html());
   } catch (error) {
-    console.error('Erro ao carregar o site:', error.message);
-
-    // Verifique se o erro é um erro de resposta HTTP
-    if (error.response) {
-      console.error(`Resposta do servidor: ${error.response.status} ${error.response.statusText}`);
-      return res.status(500).send(`Erro ao carregar o site: ${error.response.status} - ${error.response.statusText}`);
-    }
-
-    // Erro geral
-    console.error('Erro geral:', error);
-    res.status(500).send('Erro desconhecido ao carregar o site.');
+    res.status(500).send('Erro ao carregar o site.');
   }
 };
