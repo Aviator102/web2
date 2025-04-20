@@ -12,21 +12,20 @@ const rewriteUrl = (url, base) => {
 module.exports = async (req, res) => {
   const { url } = req.query;
 
-  // Verificar se a URL foi passada corretamente
   if (!url) {
     return res.status(400).send('Erro: Nenhuma URL fornecida.');
   }
 
-  // Garantir que a URL está corretamente formatada (com http:// ou https://)
+  // Garantir que a URL está corretamente formatada
   let validUrl = url;
   if (!/^https?:\/\//i.test(url)) {
-    validUrl = 'https://' + url; // Se não tiver http ou https, adiciona https://
+    validUrl = 'https://' + url; // Adiciona https:// se não tiver
   }
 
   try {
     console.log(`[INFO] Solicitando a URL: ${validUrl}`);
-    
-    // ⬇️ Adicionando User-Agent "real"
+
+    // Verifique se o URL é acessível do servidor
     const response = await axios.get(validUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119 Safari/537.36'
@@ -34,7 +33,7 @@ module.exports = async (req, res) => {
     });
 
     console.log(`[INFO] Resposta recebida para a URL: ${validUrl}`);
-    
+
     const html = response.data;
     const $ = cheerio.load(html);
 
@@ -67,12 +66,14 @@ module.exports = async (req, res) => {
     res.send($.html());
   } catch (error) {
     console.error('[PROXY ERROR] Erro ao carregar o site:', error.message);
-
+    
     // Verifica se o erro foi causado por uma resposta HTTP não ok
     if (error.response) {
-      res.status(500).send(`Erro HTTP ao acessar o site: ${error.response.status} - ${error.response.statusText}`);
+      console.log('[PROXY ERROR] Resposta HTTP de erro:', error.response.status);
+      return res.status(500).send(`Erro HTTP ao acessar o site: ${error.response.status} - ${error.response.statusText}`);
     } else {
-      res.status(500).send(`Erro desconhecido ao acessar o site: ${error.message}`);
+      console.log('[PROXY ERROR] Erro desconhecido:', error.message);
+      return res.status(500).send(`Erro desconhecido ao acessar o site: ${error.message}`);
     }
   }
 };
