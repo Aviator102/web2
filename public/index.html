@@ -2,15 +2,47 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Meu Proxy</title>
+  <title>Mini Navegador</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    #nav {
+      display: flex;
+      padding: 10px;
+      background: #eee;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 50px);
+      border: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Testando Proxy via Iframe</h1>
-  <iframe 
-    src="/api/proxy?url=https://www.tiktok.com/" 
-    width="100%" 
-    height="600px"
-    style="border:1px solid #ccc;"
-  ></iframe>
+  <div id="nav">
+    <input id="urlInput" placeholder="https://example.com" />
+    <button onclick="navegar()">Ir</button>
+  </div>
+  <iframe id="navegador" src=""></iframe>
+
+  <script>
+    function navegar() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url.startsWith('http')) {
+        alert('Use http:// ou https://');
+        return;
+      }
+      document.getElementById('navegador').src = `/api/proxy?url=${encodeURIComponent(url)}`;
+    }
+  </script>
 </body>
 </html>
